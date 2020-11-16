@@ -1,4 +1,6 @@
 *.class
 *.log
-.idea
-/scala/out
+/.idea
+/.metals
+/.vscode
+.gitignore

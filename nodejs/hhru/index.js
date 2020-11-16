@@ -1,30 +1,42 @@
 import * as https from 'https'
 
-const hhruURL = new URL('https://api.hh.ru/vacancies');
-
-hhruURL.searchParams.append('area', 113)
-hhruURL.searchParams.append('text', '("Data engineer") or ("Инженер данных")')
-hhruURL.searchParams.append('clusters', true)
-hhruURL.searchParams.append('per_page', 0)
+const hhruURL = new URL('https://api.hh.ru/vacancies')
+const hhruHeaders = { headers: { 'User-Agent': 'api-test-agent' } }
+hhruURL.search = new URLSearchParams(getQueryClusters())
+//hhruURL.search = new URLSearchParams(getQueryVacancies())
 
 // https://api.hh.ru/vacancies?text=("Data engineer") or ("Инженер данных")&clusters=true&per_page=0&area=113
-const options = {
-  hostname: 'api.hh.ru',
-  port: 443,
-  path: '/vacancies',
-  method: 'GET',
-  headers: { 'User-Agent': 'api-test-agent' }
+const req = https.request(hhruURL, hhruHeaders, function (res) {
+    console.log(`statusCode: ${res.statusCode}`)
+    console.log(`headers:', ${res.headers}`)
+    try {
+      var data = ''
+      
+      res.on('data', d => {
+        data += d
+      })
+      
+      res.on('end', () => {
+        data = JSON.parse(data)
+        console.log('data ', data)
+      })
+    } catch (error) {
+      console.error(error);
+    }
+  })
+req.end();
+
+// console.log('hhruURL: ', hhruURL)
+
+// Generator functions
+function* getQueryClusters() {
+  yield ['area', '113']
+  yield ['text', '("Data engineer") or ("Инженер данных")']
+  yield ['clusters', 'true']
+  yield ['per_page', '0']
 }
 
-const req = https.request(hhruURL, options, res => {
-  console.log(`statusCode: ${res.statusCode}`)
-  console.log(`headers:', ${res.headers}`)
-
-  res.on('data', d => {
-    process.stdout.write(d)
-  })
-}).on('error', (e) => {
-  console.error(e)
-})
-
-req.end()
+function* getQueryVacancies() {
+  yield ['area', '113']
+  yield ['text', '("Data engineer") or ("Инженер данных")']
+}
