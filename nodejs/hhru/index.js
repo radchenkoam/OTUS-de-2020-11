@@ -1,42 +1,60 @@
-import * as https from 'https'
+import axios from 'axios'
+import { db } from './db/db.js'
 
-const hhruURL = new URL('https://api.hh.ru/vacancies')
-const hhruHeaders = { headers: { 'User-Agent': 'api-test-agent' } }
-hhruURL.search = new URLSearchParams(getQueryClusters())
-//hhruURL.search = new URLSearchParams(getQueryVacancies())
 
-// https://api.hh.ru/vacancies?text=("Data engineer") or ("Инженер данных")&clusters=true&per_page=0&area=113
-const req = https.request(hhruURL, hhruHeaders, function (res) {
-    console.log(`statusCode: ${res.statusCode}`)
-    console.log(`headers:', ${res.headers}`)
-    try {
-      var data = ''
-      
-      res.on('data', d => {
-        data += d
-      })
-      
-      res.on('end', () => {
-        data = JSON.parse(data)
-        console.log('data ', data)
-      })
-    } catch (error) {
-      console.error(error);
+Promise.all([getClusters(), getVacancies()])
+  .then(function (results) {
+    const _clusters = results[0].clusters
+    const _vacancies = results[1]
+
+    for(const c of _clusters){
+      for(const i of c.items){
+        console.log(`${c.name} ${i.name} ${i.count} ${i.url}`)
+      }
     }
+
+    //console.log(vacancies)
   })
-req.end();
 
-// console.log('hhruURL: ', hhruURL)
+/*
+id serial, -- идентификатор кластера
+"name" text not null default 'noname'::text, -- имя
+"type" text not null default 'notype'::text, -- тип
+url text null, -- url
+cnt int4 not null default 0, -- количество
+*/
+async function getClusters () {  
 
-// Generator functions
-function* getQueryClusters() {
-  yield ['area', '113']
-  yield ['text', '("Data engineer") or ("Инженер данных")']
-  yield ['clusters', 'true']
-  yield ['per_page', '0']
+  const r = await axios({
+    url: '/vacancies',
+    method: 'get',
+    baseURL: 'https://api.hh.ru/',
+    headers: { 'User-Agent': 'api-test-agent' },
+    params: {
+      area: 113, text: '("Data engineer") or ("Инженер данных")',
+      clusters: true, per_page: 0
+    }
+  }).catch(function (error) {
+    console.log(error)
+  })
+
+  return r.data
 }
 
-function* getQueryVacancies() {
-  yield ['area', '113']
-  yield ['text', '("Data engineer") or ("Инженер данных")']
+
+
+async function getVacancies () {  
+
+  const r = await axios({
+    url: '/vacancies',
+    method: 'get',
+    baseURL: 'https://api.hh.ru/',
+    headers: { 'User-Agent': 'api-test-agent' },
+    params: {
+      area: 113, text: '("Data engineer") or ("Инженер данных")'
+    }
+  }).catch(function (error) {
+    console.log(error)
+  })
+  return r.data
 }
