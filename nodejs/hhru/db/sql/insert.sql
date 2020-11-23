@@ -1,0 +1,1 @@
+insert into ${tableName:raw} (${values:name}) values (${values:csv}) ${returnExp:raw}

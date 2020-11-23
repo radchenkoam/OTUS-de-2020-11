@@ -1,15 +1,25 @@
 import axios from 'axios'
 import { db } from './db/db.js'
 
-
 Promise.all([getClusters(), getVacancies()])
   .then(function (results) {
     const _clusters = results[0].clusters
     const _vacancies = results[1]
 
-    for(const c of _clusters){
-      for(const i of c.items){
-        console.log(`${c.name} ${i.name} ${i.count} ${i.url}`)
+    db.clusters.emptyTable()
+    
+    var _i = 1
+    for(const c of _clusters) {
+      for(const i of c.items) {
+        const _c = {
+          name: i.name, 
+          type: c.name, 
+          url: i.url, 
+          cnt: i.count
+        }
+        db.clusters.add(_c)
+        console.log(`Cluster ${_i}: type: ${_c.type}, name: ${_c.name}, cnt: ${_c.cnt}`)
+        _i++
       }
     }
 
