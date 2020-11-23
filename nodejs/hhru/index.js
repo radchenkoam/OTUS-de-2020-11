@@ -1,13 +1,13 @@
+import moment from 'moment'
 import axios from 'axios'
 import { db } from './db/db.js'
 
 Promise.all([getClusters(), getVacancies()])
   .then(function (results) {
-    const _clusters = results[0].clusters
-    const _vacancies = results[1]
+    //const _clusters = results[0].clusters
+    const _vacancies = results[1].items
 
-    db.clusters.emptyTable()
-    
+    /*db.clusters.emptyTable()
     var _i = 1
     for(const c of _clusters) {
       for(const i of c.items) {
@@ -21,18 +21,30 @@ Promise.all([getClusters(), getVacancies()])
         console.log(`Cluster ${_i}: type: ${_c.type}, name: ${_c.name}, cnt: ${_c.cnt}`)
         _i++
       }
-    }
+    }*/
 
-    //console.log(vacancies)
+    // 'id', 'name', 'area', 'salary', 'type', 'employer', 'snippet', 'published_at', 'created_at'
+    db.vacancies.emptyTable()
+
+    var _i = 1
+    for(const v of _vacancies) {
+        const _v = {
+          id: v.id,
+          name: v.name, 
+          area: v.area, 
+          salary: v.salary, 
+          type: v.type, 
+          employer: v.employer, 
+          snippet: v.snippet, 
+          published_at: v.published_at, 
+          created_at: moment(new Date()).utc()
+        }
+        db.vacancies.add(_v)
+        console.log(`Vacancy ${_i}: id: ${v.id}, name: ${v.name}, area: ${v.area}, salary: ${v.salary}, type: ${v.type}, employer: ${v.employer}, snippet: ${v.snippet}, published_at: ${v.published_at}`)
+        _i++
+    }
   })
 
-/*
-id serial, -- идентификатор кластера
-"name" text not null default 'noname'::text, -- имя
-"type" text not null default 'notype'::text, -- тип
-url text null, -- url
-cnt int4 not null default 0, -- количество
-*/
 async function getClusters () {  
 
   const r = await axios({
@@ -50,8 +62,6 @@ async function getClusters () {
 
   return r.data
 }
-
-
 
 async function getVacancies () {  
 

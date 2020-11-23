@@ -45,7 +45,7 @@ class VacanciesManager {
                     area: v.area,
                     salary: v.salary,
                     type: v.type,
-                    employer: employer,
+                    employer: v.employer,
                     snippet: v.snippet,
                     published_at: v.published_at,
                     created_at: v.created_at || moment(new Date()).utc()
@@ -81,7 +81,7 @@ class VacanciesManager {
     }
 
     // Removes all records from the table
-    async empty() {
+    async emptyTable() {
         return this.db.none(query.truncate, { tableName: cs.select.table })
     }
 
