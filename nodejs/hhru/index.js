@@ -2,49 +2,58 @@ import moment from 'moment'
 import axios from 'axios'
 import { db } from './db/db.js'
 
-Promise.all([getClusters(), getVacancies()])
+// truncate vacancies table
+await db.vacancies.emptyTable()
+
+// drop & create clusters table
+await db.clusters.dropTable()
+await db.clusters.createTable()
+
+
+var clusters
+var vacancies
+
+await Promise.all([getClusters(), getVacancies()])
   .then(function (results) {
-    //const _clusters = results[0].clusters
-    const _vacancies = results[1].items
-
-    /*db.clusters.emptyTable()
-    var _i = 1
-    for(const c of _clusters) {
-      for(const i of c.items) {
-        const _c = {
-          name: i.name, 
-          type: c.name, 
-          url: i.url, 
-          cnt: i.count
-        }
-        db.clusters.add(_c)
-        console.log(`Cluster ${_i}: type: ${_c.type}, name: ${_c.name}, cnt: ${_c.cnt}`)
-        _i++
-      }
-    }*/
-
-    // 'id', 'name', 'area', 'salary', 'type', 'employer', 'snippet', 'published_at', 'created_at'
-    db.vacancies.emptyTable()
-
-    var _i = 1
-    for(const v of _vacancies) {
-        const _v = {
-          id: v.id,
-          name: v.name, 
-          area: v.area, 
-          salary: v.salary, 
-          type: v.type, 
-          employer: v.employer, 
-          snippet: v.snippet, 
-          published_at: v.published_at, 
-          created_at: moment(new Date()).utc()
-        }
-        db.vacancies.add(_v)
-        console.log(`Vacancy ${_i}: id: ${v.id}, name: ${v.name}, area: ${v.area}, salary: ${v.salary}, type: ${v.type}, employer: ${v.employer}, snippet: ${v.snippet}, published_at: ${v.published_at}`)
-        _i++
-    }
+    clusters = results[0]
+    vacancies = results[1]
   })
 
+// clusters save into db
+for(const c of clusters) {
+  for(const i of c.items) {
+    db.clusters.add({
+      name: i.name, 
+      type: c.name, 
+      url: i.url, 
+      cnt: i.count
+    })
+    console.log(`Cluster "${i.name} (${c.name})" saved.`)
+  }
+}
+
+// vacancies save into db
+for(const v of vacancies) {
+  const vacancy = await getVacancy(v.id)
+  db.vacancies.add({
+    id: vacancy.id,
+    name: vacancy.name, 
+    area: vacancy.area, 
+    salary: vacancy.salary, 
+    type: vacancy.type, 
+    experience: vacancy.experience,
+    schedule: vacancy.schedule,
+    employment: vacancy.employment,
+    description: vacancy.description,
+    key_skills: vacancy.key_skills,
+    employer: vacancy.employer, 
+    published_at: vacancy.published_at, 
+    created_at: moment(new Date()).utc()
+  })
+  console.log(`INFO: Vacancy id: ${vacancy.id}, name: "${vacancy.name}" saved.`)
+}
+
+// get clusters data from hh.ru
 async function getClusters () {  
 
   const r = await axios({
@@ -60,9 +69,10 @@ async function getClusters () {
     console.log(error)
   })
 
-  return r.data
+  return r.data.clusters
 }
 
+// get vacancies data from hh.ru
 async function getVacancies () {  
 
   const r = await axios({
@@ -71,8 +81,22 @@ async function getVacancies () {
     baseURL: 'https://api.hh.ru/',
     headers: { 'User-Agent': 'api-test-agent' },
     params: {
-      area: 113, text: '("Data engineer") or ("Инженер данных")'
+      area: 113, text: '("Data engineer") or ("Инженер данных")', per_page: 100
     }
+  }).catch(function (error) {
+    console.log(error)
+  })
+  return r.data.items
+}
+
+// get vacancy data by id from hh.ru
+async function getVacancy (id) {  
+
+  const r = await axios({
+    url: `/vacancies/${id}`,
+    method: 'get',
+    baseURL: 'https://api.hh.ru/',
+    headers: { 'User-Agent': 'api-test-agent' },
   }).catch(function (error) {
     console.log(error)
   })

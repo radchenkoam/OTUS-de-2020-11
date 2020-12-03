@@ -6,8 +6,8 @@ const { QueryFile } = pkg;
 const __dirname = path.resolve();
 
 export const query = {
-  createUsersTable: sql('/db/sql/createClustersTable.sql'),
-  createPersonsTable: sql('/db/sql/createVacanciesTable.sql'),
+  createClustersTable: sql('/db/sql/createClustersTable.sql'),
+  createVacanciesTable: sql('/db/sql/createVacanciesTable.sql'),
   drop: sql('/db/sql/drop.sql'),
   insert: sql('/db/sql/insert.sql'),
   delete: sql('/db/sql/delete.sql'),
