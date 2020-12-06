@@ -1,6 +1,7 @@
 import moment from 'moment'
-import axios from 'axios'
 import { db } from './db/db.js'
+import math from 'math'
+import api from './helpers/api.js'
 
 // truncate vacancies table
 await db.vacancies.emptyTable()
@@ -9,96 +10,65 @@ await db.vacancies.emptyTable()
 await db.clusters.dropTable()
 await db.clusters.createTable()
 
+var found_pages
 
-var clusters
-var vacancies
-
-await Promise.all([getClusters(), getVacancies()])
-  .then(function (results) {
-    clusters = results[0]
-    vacancies = results[1]
+// get clusters from hh.ru
+await Promise.all([api.getClusters()])
+  .then((r) => {
+    for(const c of r[0].clusters) {
+      for(const i of c.items) {
+        db.clusters.add({
+          name: i.name, 
+          type: c.name, 
+          url: i.url, 
+          cnt: i.count
+        })
+        console.log(`Cluster "${i.name} (${c.name})" saved.`)
+      }
+    }
+    found_pages = math.ceil(parseInt(r[0].found) / 100)
+    console.log(`Всего вакансий: ${r[0].found} на ${found_pages} стр.`)
+  })
+  .catch(err => {
+    console.log(err)
   })
 
-// clusters save into db
-for(const c of clusters) {
-  for(const i of c.items) {
-    db.clusters.add({
-      name: i.name, 
-      type: c.name, 
-      url: i.url, 
-      cnt: i.count
+// get vacancies & save into db
+for(var count = 0; count < found_pages; count++) {
+  await new Promise(resolve => setTimeout(resolve, 5000)) // wait 5 secs (ddos guard)
+  await Promise.all([api.getVacancies(count)])
+    .then((r) => {
+      // vacancies save into db
+      for(const v of r[0]) {
+        Promise.all([api.getVacancy(v.id)])
+          .then((r) => {
+            const vacancy = r[0]
+            db.vacancies.add({
+              id: vacancy.id,
+              name: vacancy.name, 
+              area: vacancy.area, 
+              salary: vacancy.salary, 
+              type: vacancy.type, 
+              experience: vacancy.experience,
+              schedule: vacancy.schedule,
+              employment: vacancy.employment,
+              description: vacancy.description,
+              key_skills: vacancy.key_skills,
+              employer: vacancy.employer, 
+              published_at: vacancy.published_at, 
+              created_at: moment(new Date()).utc()
+            })
+            console.log(`INFO: Vacancy id: ${vacancy.id}, name: "${vacancy.name}" saved.`)
+          }) // .then vacancy
+          .catch(err => {
+            console.log(err)
+          }) // .catch
+      } // for v
+    }) // .then vacancies
+    .catch(err => {
+      console.log(err)
     })
-    console.log(`Cluster "${i.name} (${c.name})" saved.`)
-  }
-}
-
-// vacancies save into db
-for(const v of vacancies) {
-  const vacancy = await getVacancy(v.id)
-  db.vacancies.add({
-    id: vacancy.id,
-    name: vacancy.name, 
-    area: vacancy.area, 
-    salary: vacancy.salary, 
-    type: vacancy.type, 
-    experience: vacancy.experience,
-    schedule: vacancy.schedule,
-    employment: vacancy.employment,
-    description: vacancy.description,
-    key_skills: vacancy.key_skills,
-    employer: vacancy.employer, 
-    published_at: vacancy.published_at, 
-    created_at: moment(new Date()).utc()
-  })
-  console.log(`INFO: Vacancy id: ${vacancy.id}, name: "${vacancy.name}" saved.`)
-}
-
-// get clusters data from hh.ru
-async function getClusters () {  
-
-  const r = await axios({
-    url: '/vacancies',
-    method: 'get',
-    baseURL: 'https://api.hh.ru/',
-    headers: { 'User-Agent': 'api-test-agent' },
-    params: {
-      area: 113, text: '("Data engineer") or ("Инженер данных")',
-      clusters: true, per_page: 0
-    }
-  }).catch(function (error) {
-    console.log(error)
-  })
-
-  return r.data.clusters
-}
-
-// get vacancies data from hh.ru
-async function getVacancies () {  
-
-  const r = await axios({
-    url: '/vacancies',
-    method: 'get',
-    baseURL: 'https://api.hh.ru/',
-    headers: { 'User-Agent': 'api-test-agent' },
-    params: {
-      area: 113, text: '("Data engineer") or ("Инженер данных")', per_page: 100
-    }
-  }).catch(function (error) {
-    console.log(error)
-  })
-  return r.data.items
-}
-
-// get vacancy data by id from hh.ru
-async function getVacancy (id) {  
-
-  const r = await axios({
-    url: `/vacancies/${id}`,
-    method: 'get',
-    baseURL: 'https://api.hh.ru/',
-    headers: { 'User-Agent': 'api-test-agent' },
-  }).catch(function (error) {
-    console.log(error)
-  })
-  return r.data
+    .finally(
+      console.log('That`s all folks...')
+    )
 }
