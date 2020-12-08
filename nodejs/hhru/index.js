@@ -2,6 +2,7 @@ import moment from 'moment'
 import { db } from './db/db.js'
 import math from 'math'
 import api from './helpers/api.js'
+import htmlToText from 'html-to-text'
 
 // truncate vacancies table
 await db.vacancies.emptyTable()
@@ -59,11 +60,15 @@ for(const id of vacancy_ids_list) {
     experience: vacancy.experience,
     schedule: vacancy.schedule,
     employment: vacancy.employment,
-    description: vacancy.description,
-    key_skills: vacancy.key_skills,
+    description: htmlToText.htmlToText(vacancy.description),
+    key_skills: JSON.stringify(vacancy.key_skills),
     employer: vacancy.employer, 
     published_at: vacancy.published_at, 
     created_at: moment(new Date()).utc()
   })
+  .catch((err) => {
+    console.log(err)
+    }    
+  )
   console.log(`INFO: Vacancy id: ${vacancy.id}, name: "${vacancy.name}`)
 }

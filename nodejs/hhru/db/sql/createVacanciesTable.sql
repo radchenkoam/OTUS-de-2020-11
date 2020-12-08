@@ -8,7 +8,7 @@ create table if not exists public.vacancies (
   schedule jsonb null,
   employment jsonb null,
   "description" text null, 
-  key_skills text null,
+  key_skills jsonb null,
   employer jsonb null,
   published_at timestamptz not null,
   created_at timestamptz not null default current_timestamp,
