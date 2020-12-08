@@ -3,4 +3,5 @@
 /.idea
 /.metals
 /.vscode
+/.scala
 .gitignore
