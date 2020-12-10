@@ -11,21 +11,22 @@
 <p align="right"><img src="https://user-images.githubusercontent.com/29423304/101603876-3d2ac400-3a11-11eb-936c-7bb069c47f89.png" /></p>
 <h4><div align="center">Виртуальная машина в Google Cloud Platform</div></h4>
 
-- в проекте **DE-2020-11** создал [виртуальную машину](https://console.cloud.google.com/compute/instances?project=de-2020-11&instancessize=50 "Ctrl+click->new tab") `cdh-cloudera2` командами **gcloud**
+- в проекте **DE-2020-11** создал [виртуальную машину](https://console.cloud.google.com/compute/instances?project=de-2020-11&instancessize=50 "Ctrl+click->new tab") `cdh` командами **gcloud**
     <pre><details><summary>создание виртуальной машины</summary>
     $ gcloud beta compute --project=de-2020-11 instances create cdh \
        --zone=us-central1-a \
-       --machine-type=n1-standard-4 \
-       --subnet=default --network-tier=PREMIUM \
+       --machine-type=e2-standard-8 \
+       --subnet=default \
+       --network-tier=PREMIUM \
        --maintenance-policy=MIGRATE \
        --service-account=313591580200-compute@developer.gserviceaccount.com \
        --scopes=https://www.googleapis.com/auth/cloud-platform \
        --tags=http-server,https-server \
-       --image=ubuntu-1804-bionic-v20201201 \
+       --image=ubuntu-1804-bionic-v20201123 \
        --image-project=ubuntu-os-cloud \
        --boot-disk-size=30GB \
-       --boot-disk-type=pd-standard \
-       --boot-disk-device-name=cdh-cloudera2 \
+       --boot-disk-type=pd-ssd \
+       --boot-disk-device-name=cdh \
        --no-shielded-secure-boot \
        --shielded-vtpm \
        --shielded-integrity-monitoring \
@@ -35,21 +36,21 @@
     <pre><details><summary>создание правил брандмауэра для трафика http, https</summary>
     $ gcloud compute --project=de-2020-11 firewall-rules create default-allow-http \
        --direction=INGRESS \
-	   --priority=1000 \
-	   --network=default \
-	   --action=ALLOW \
-	   --rules=tcp:80 \
-	   --source-ranges=0.0.0.0/0 \
-	   --target-tags=http-server
+       --priority=1000 \
+       --network=default \
+       --action=ALLOW \
+       --rules=tcp:80 \
+       --source-ranges=0.0.0.0/0 \
+       --target-tags=http-server
 
     $ gcloud compute --project=de-2020-11 firewall-rules create default-allow-https \
-	   --direction=INGRESS \
-	   --priority=1000 \
-	   --network=default \
-	   --action=ALLOW \
-	   --rules=tcp:443 \
-	   --source-ranges=0.0.0.0/0 \
-	   --target-tags=https-server
+       --direction=INGRESS \
+       --priority=1000 \
+       --network=default \
+       --action=ALLOW \
+       --rules=tcp:443 \
+       --source-ranges=0.0.0.0/0 \
+       --target-tags=https-server
     </details></pre>
 
 - зашел через `ssh`, установил [Docker](https://docs.docker.com/engine/install/ubuntu/ "Ctrl+click->new tab") с помощью скрипта установки
@@ -104,6 +105,7 @@
        --rules=all \
        --source-ranges=0.0.0.0/0
     ```
+
 ***
 <p align="right"><img src="https://user-images.githubusercontent.com/29423304/101672413-e2bc5280-3a66-11eb-85da-66546bb79f76.png" /></p>
 <h4><div align="center">Cloudera Manager</div></h4>
@@ -138,4 +140,3 @@ LOCATION '/user/cloudera/athlete'
 ```
 - выполнил запрос `SELECT * FROM athlete;`
 ![image](https://user-images.githubusercontent.com/29423304/101834708-c0e8cb80-3b4b-11eb-9de2-bd884f7f10e0.png)
-
