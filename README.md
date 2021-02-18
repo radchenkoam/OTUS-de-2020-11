@@ -29,3 +29,17 @@
 #### <u>Тема:</u> "Инструменты выгрузки данных из сторонних систем".
 
 - [**Домашнее задание.**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/hw4.md "Ctrl+click->new tab") **Настроить захват изменений из Postgres (CDC)**
+
+***
+
+### **Занятие 16, 17.**
+#### <u>Тема:</u> "DWH. Хранилища данных".
+
+- [**Домашнее задание.**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/hw5md "Ctrl+click->new tab") **Проектирование витрины данных в Vertica (BigQuery)**
+
+***
+
+### **Занятие 19.**
+#### <u>Тема:</u> "SQL-доступ к данным. Apache Hive".
+
+- [**Домашнее задание.**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/hw6.md "Ctrl+click->new tab") **Практика с Hive на GCP DataProc**
