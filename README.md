@@ -35,7 +35,7 @@
 ### **Занятие 16, 17.**
 #### <u>Тема:</u> "DWH. Хранилища данных".
 
-- [**Домашнее задание.**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/hw5md "Ctrl+click->new tab") **Проектирование витрины данных в Vertica (BigQuery)**
+- [**Домашнее задание.**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/hw5.md "Ctrl+click->new tab") **Проектирование витрины данных в Vertica (BigQuery)**
 
 ***
 
