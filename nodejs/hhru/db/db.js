@@ -1,8 +1,8 @@
 import env from '../env.js'
 import promise from 'bluebird'
 import pgPromise from 'pg-promise'
-import ClustersManager from './models/users.js'
-import VacanciesManager from './models/persons.js'
+import ClustersManager from './models/clusters.js'
+import VacanciesManager from './models/vacancies.js'
 
 const initOptions = {
     promiseLib: promise,
