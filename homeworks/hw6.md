@@ -101,8 +101,8 @@ NAME                   DATABASE_VERSION  LOCATION        TIER              PRIMA
 hive-metastore-mysql  MYSQL_5_7         europe-west3-a  db-n1-standard-1  35.246.145.111   -                RUNNABLE
 ```
 
-- создал кластер `Dataproc`[^1]
-  [^1]: `Google Cloud Dataproc` позволяет подготавливать кластеры `Apache Hadoop` и подключаться к базовым хранилищам аналитических данных.
+- создал кластер `Dataproc`
+  > `Google Cloud Dataproc` позволяет подготавливать кластеры `Apache Hadoop` и подключаться к базовым хранилищам аналитических данных.
 
 <pre><details><summary>команда gcloud</summary>
 $ gcloud config set compute/zone $GCP_ZONE
