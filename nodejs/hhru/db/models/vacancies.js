@@ -45,8 +45,12 @@ class VacanciesManager {
                     area: v.area,
                     salary: v.salary,
                     type: v.type,
-                    employer: employer,
-                    snippet: v.snippet,
+                    experience: v.experience,
+                    schedule: v.schedule,
+                    employment: v.employment,
+                    description: v.description,
+                    key_skills: v.key_skills,
+                    employer: v.employer,
                     published_at: v.published_at,
                     created_at: v.created_at || moment(new Date()).utc()
                 },
@@ -81,7 +85,7 @@ class VacanciesManager {
     }
 
     // Removes all records from the table
-    async empty() {
+    async emptyTable() {
         return this.db.none(query.truncate, { tableName: cs.select.table })
     }
 
@@ -104,8 +108,10 @@ function createColumnsets(pgp) {
     if (!cs.insert) {
         const table = new pgp.helpers.TableName({table: 'vacancies', schema: 'public'})
         cs.insert = new pgp.helpers.ColumnSet([
-            'id', 'name', 'area', 'salary', 'type', 'employer', 
-            'snippet', 'published_at', 'created_at'
+            'id', 'name', 'area', 'salary', 'type', 
+            'experience', 'schedule', 'employment', 
+            'description', 'key_skills', 'employer', 
+            'published_at', 'created_at'
         ], {table})
         cs.update = cs.insert
         cs.select = cs.update

@@ -4,9 +4,13 @@ create table if not exists public.vacancies (
   "area" jsonb null,
   salary jsonb null,
   "type" jsonb null,
+  experience jsonb null,
+  schedule jsonb null,
+  employment jsonb null,
+  "description" text null, 
+  key_skills jsonb null,
   employer jsonb null,
-  snippet jsonb null,
   published_at timestamptz not null,
   created_at timestamptz not null default current_timestamp,
-  constraint vacancies primary key (id)
+  constraint vacancies_pk primary key (id)
 );
