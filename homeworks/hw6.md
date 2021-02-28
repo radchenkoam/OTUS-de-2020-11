@@ -123,6 +123,7 @@ $ gcloud dataproc clusters create hive-cluster \
 </details></pre>
 
 :exclamation: в конце значения параметра `--metadata "hive-metastore-instance=` указал имя инстанса `MySQL` из предыдущего шага
+
 :memo: можно создавать кластер из одной или нескольких нод: для этого указать либо `--single-node` либо `--num-workers=${HMSC_NODE_NUM}`, где `${HMSC_NODE_NUM}` - требуемое количество `workers`.
 
 ---
