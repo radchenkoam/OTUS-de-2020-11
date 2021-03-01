@@ -515,18 +515,257 @@ $ beeline -u "jdbc:hive2://hive-cluster-m:10000"
   $ gcloud compute ssh hive-cluster-m
   ```
 
-- на этот раз использовал движок `presto` для sql-запросов
+---
 
-```bash
-$ presto --catalog hive --schema default
-presto:default> show tables;
-           Table
-----------------------------
- chicago_taxi_trips_csv
- chicago_taxi_trips_parquet
-(2 rows)
+<div align="center"><h3>Запросы</h3></div>
 
-Query 20210223_194654_00005_gbeek, FINISHED, 3 nodes
-Splits: 36 total, 36 done (100.00%)
-0:00 [2 rows, 82B] [4 rows/s, 177B/s]
+---
+
+```sql
+1. csv: select count(*) from chicago_taxi_trips_csv where trip_miles > 50;
+1. prq: select count(*) from chicago_taxi_trips_parquet where trip_miles > 50;
 ```
+
+- `presto`
+  <pre><details><summary>pq_csv#1</summary>
+  presto:default> select count(*) from chicago_taxi_trips_csv where trip_miles > 50;
+  _col0 
+  +------
+  28165 
+  (1 row)
+  
+  Query 20210226_190609_00006_ukm5q, FINISHED, 2 nodes
+  Splits: 253 total, 253 done (100.00%)
+  0:19 [21.6M rows, 7.96GB] [1.12M rows/s, 424MB/s]
+  </details></pre>
+
+  <pre><details><summary>pq_prq#1</summary>
+  presto:default> select count(*) from chicago_taxi_trips_parquet where trip_miles > 50;
+  _col0 
+  +------
+  28165 
+  (1 row)
+  
+  Query 20210226_191010_00009_ukm5q, FINISHED, 2 nodes
+  Splits: 62 total, 62 done (100.00%)
+  0:02 [21.6M rows, 60.7MB] [9.26M rows/s, 26MB/s]
+  </details></pre>
+
+- `hive`
+  <pre><details><summary>hq_csv#1</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select count(*) from chicago_taxi_trips_csv where trip_miles > 50;
+  +--------+
+  |  _c0   |
+  +--------+
+  | 28165  |
+  +--------+
+  1 row selected (32.097 seconds) 
+  </details></pre>
+
+  <pre><details><summary>hq_prq#1</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select count(*) from chicago_taxi_trips_parquet where trip_miles > 50;
+  +--------+
+  |  _c0   |
+  +--------+
+  | 28165  |
+  +--------+
+  1 row selected (18.06 seconds)
+  </details></pre>
+
+```sql
+2. csv: select distinct company, payment_type from chicago_taxi_trips_csv limit 10;
+2. prq: select distinct company, payment_type from chicago_taxi_trips_parquet limit 10;
+```
+
+- `presto`
+  <pre><details><summary>pq_csv#2</summary>
+  presto:default> select distinct company, payment_type from chicago_taxi_trips_csv limit 10;
+                company                | payment_type 
+  -------------------------------------+--------------
+  Taxi Affiliation Service Yellow      | Cash         
+  Patriot Taxi Dba Peace Taxi Associat | Cash         
+  Taxi Affiliation Service Yellow      | Credit Card  
+  Sun Taxi                             | Credit Card  
+  Sun Taxi                             | Cash         
+  Medallion Leasin                     | Credit Card  
+  City Service                         | Credit Card  
+  City Service                         | Cash         
+  Globe Taxi                           | Cash         
+  24 Seven Taxi                        | Cash         
+  (10 rows)
+  
+  Query 20210226_191658_00011_ukm5q, FINISHED, 2 nodes
+  Splits: 217 total, 25 done (11.52%)
+  0:01 [582K rows, 210MB] [402K rows/s, 145MB/s]
+  </details></pre>
+
+  <pre><details><summary>pq_prq#2</summary>
+  presto:default> select distinct company, payment_type from chicago_taxi_trips_parquet limit 10;
+                company                | payment_type 
+  -------------------------------------+--------------
+  Nova Taxi Affiliation Llc            | Credit Card  
+  Taxi Affiliation Service Yellow      | Credit Card  
+  Sun Taxi                             | Cash         
+  Taxi Affiliation Service Yellow      | Mobile       
+  City Service                         | Cash         
+  Chicago Carriage Cab Corp            | Cash         
+  Taxi Affiliation Service Yellow      | Cash         
+  Medallion Leasin                     | Credit Card  
+  Patriot Taxi Dba Peace Taxi Associat | Cash         
+  Nova Taxi Affiliation Llc            | Cash         
+  (10 rows)
+  
+  Query 20210226_192359_00012_ukm5q, FINISHED, 2 nodes
+  Splits: 62 total, 49 done (79.03%)
+  0:01 [101K rows, 3.71MB] [171K rows/s, 6.27MB/s]
+  </details></pre>
+
+- `hive`
+  <pre><details><summary>hq_csv#2</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select distinct company, payment_type from chicago_taxi_trips_csv limit 10;
+  +-------------------------------------------+---------------+
+  |                  company                  | payment_type  |
+  +-------------------------------------------+---------------+
+  | 24 Seven Taxi                             | Cash          |
+  | 3897 - Ilie Malec                         | Cash          |
+  | Chicago Elite Cab Corp.                   | Cash          |
+  | 6743 - Luhak Corp                         | Cash          |
+  | Blue Diamond                              | Cash          |
+  | Chicago Elite Cab Corp. (Chicago Carriag  | Cash          |
+  | 1085 - N and W Cab Co                     | Cash          |
+  | 5997 - AW Services Inc.                   | Cash          |
+  | Checker Taxi Affiliation                  | Cash          |
+  | Dispatch Taxi Affiliation                 | Cash          |
+  +-------------------------------------------+---------------+
+  10 rows selected (32.341 seconds)
+  </details></pre>
+
+  <pre><details><summary>hq_prq#2</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select distinct company, payment_type from chicago_taxi_trips_parquet limit 10;
+  +-----------------------------+---------------+
+  |           company           | payment_type  |
+  +-----------------------------+---------------+
+  |                             | Cash          |
+  | "3721 - Santamaria Express  | Cash          |
+  | "Taxicab Insurance Agency   | Cash          |
+  | 1247 - Daniel Ayertey       | Cash          |
+  | 1469 - 64126 Omar Jada      | Cash          |
+  | 2192 - Zeymane Corp         | Cash          |
+  | 24 Seven Taxi               | Cash          |
+  | 2733 - 74600 Benny Jona     | Cash          |
+  | 3385 - Eman Cab             | Cash          |
+  | 3897 - Ilie Malec           | Cash          |
+  +-----------------------------+---------------+
+  10 rows selected (17.653 seconds)
+  </details></pre>
+
+```sql
+3. csv: select company, payment_type, avg(fare) as fare_avg, count(tips) as tips_cnt, sum(trip_total) as trip_sum from chicago_taxi_trips_csv where trip_miles > 10 group by company, payment_type order by trip_sum desc limit 10;
+3. prq: select company, payment_type, avg(fare) as fare_avg, count(tips) as tips_cnt, sum(trip_total) as trip_sum from chicago_taxi_trips_parquet where trip_miles > 10 group by company, payment_type order by trip_sum desc limit 10;
+```
+
+- `presto`
+  <pre><details><summary>pq_csv#3</summary>
+  presto:default> select 
+               ->   company, payment_type, avg(fare) as fare_avg, 
+               ->   count(tips) as tips_cnt, sum(trip_total) as trip_sum 
+               -> from chicago_taxi_trips_csv 
+               -> where trip_miles > 10 
+               -> group by company, payment_type 
+               -> order by trip_sum desc limit 10;
+           company          | payment_type | fare_avg  | tips_cnt |  trip_sum   
+  --------------------------+--------------+-----------+----------+-------------
+                            | Credit Card  | 37.027275 |   521526 | 2.5134564E7 
+  Flash Cab                 | Credit Card  | 41.990475 |   308982 |  1.688457E7 
+                            | Cash         | 38.157295 |   372651 | 1.5162054E7 
+  Flash Cab                 | Cash         | 41.503853 |   221317 |   9806576.0 
+  Yellow Cab                | Credit Card  | 35.491512 |   201416 |   9182222.0 
+  Chicago Carriage Cab Corp | Credit Card  |  42.40266 |    97859 |   5558971.0 
+  Sun Taxi                  | Credit Card  | 42.962994 |    89793 |   5155943.5 
+  Yellow Cab                | Cash         | 35.585518 |   124546 |   4743887.5 
+  City Service              | Credit Card  | 42.799595 |    79357 |   4501295.0 
+  Medallion Leasin          | Credit Card  | 42.188828 |    76977 |   4326827.0 
+  (10 rows)
+  
+  Query 20210226_194236_00015_ukm5q, FINISHED, 2 nodes
+  Splits: 314 total, 314 done (100.00%)
+  0:15 [21.6M rows, 7.95GB] [1.42M rows/s, 533MB/s]
+  </details></pre>
+
+  <pre><details><summary>pq_prq#3</summary>
+  presto:default> select 
+               ->   company, payment_type, avg(fare) as fare_avg, 
+               ->   count(tips) as tips_cnt, sum(trip_total) as trip_sum 
+               -> from chicago_taxi_trips_parquet 
+               -> where trip_miles > 10 
+               -> group by company, payment_type 
+               -> order by trip_sum desc limit 10;
+           company          | payment_type | fare_avg  | tips_cnt |  trip_sum   
+  --------------------------+--------------+-----------+----------+-------------
+                            | Credit Card  | 37.027275 |   521526 | 2.5134564E7 
+  Flash Cab                 | Credit Card  | 41.990475 |   308982 |  1.688457E7 
+                            | Cash         | 38.157295 |   372651 | 1.5162054E7 
+  Flash Cab                 | Cash         | 41.503853 |   221317 |   9806576.0 
+  Yellow Cab                | Credit Card  | 35.491512 |   201416 |   9182222.0 
+  Chicago Carriage Cab Corp | Credit Card  |  42.40266 |    97859 |   5558971.0 
+  Sun Taxi                  | Credit Card  | 42.962994 |    89793 |   5155943.5 
+  Yellow Cab                | Cash         | 35.585518 |   124546 |   4743887.5 
+  City Service              | Credit Card  | 42.799595 |    79357 |   4501295.0 
+  Medallion Leasin          | Credit Card  | 42.188828 |    76977 |   4326827.0 
+  (10 rows)
+  
+  Query 20210226_195113_00016_ukm5q, FINISHED, 2 nodes
+  Splits: 126 total, 126 done (100.00%)
+  0:04 [21.6M rows, 155MB] [5.53M rows/s, 39.6MB/s]
+  </details></pre>
+
+- `hive`
+  <pre><details><summary>hq_csv#3</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select 
+  . . . . . . . . . . . . . . . . . . >   company, payment_type, avg(fare) as fare_avg, 
+  . . . . . . . . . . . . . . . . . . >   count(tips) as tips_cnt, sum(trip_total) as trip_sum 
+  . . . . . . . . . . . . . . . . . . > from chicago_taxi_trips_csv 
+  . . . . . . . . . . . . . . . . . . > where trip_miles > 10 
+  . . . . . . . . . . . . . . . . . . > group by company, payment_type 
+  . . . . . . . . . . . . . . . . . . > order by trip_sum desc limit 10;
+  +----------------------------+---------------+---------------------+-----------+-----------------------+
+  |          company           | payment_type  |      fare_avg       | tips_cnt  |       trip_sum        |
+  +----------------------------+---------------+---------------------+-----------+-----------------------+
+  |                            | Credit Card   | 37.027273500806785  | 521526    | 2.5134563886876106E7  |
+  | Flash Cab                  | Credit Card   | 41.99047601477241   | 308982    | 1.6884569577551126E7  |
+  |                            | Cash          | 38.15729485945225   | 372651    | 1.5162053984136779E7  |
+  | Flash Cab                  | Cash          | 41.50385456209039   | 221317    | 9806576.360176066     |
+  | Yellow Cab                 | Credit Card   | 35.49151135112179   | 201416    | 9182222.00885582      |
+  | Chicago Carriage Cab Corp  | Credit Card   | 42.40266097139762   | 97859     | 5558970.788137436     |
+  | Sun Taxi                   | Credit Card   | 42.96299266089784   | 89793     | 5155943.359415054     |
+  | Yellow Cab                 | Cash          | 35.585518042922885  | 124546    | 4743887.57028389      |
+  | City Service               | Credit Card   | 42.79959499490314   | 79357     | 4501295.169416428     |
+  | Medallion Leasin           | Credit Card   | 42.188825883055976  | 76977     | 4326826.978925705     |
+  +----------------------------+---------------+---------------------+-----------+-----------------------+
+  10 rows selected (42.777 seconds)
+  </details></pre>
+
+  <pre><details><summary>hq_prq#3</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select 
+  . . . . . . . . . . . . . . . . . . >   company, payment_type, avg(fare) as fare_avg, 
+  . . . . . . . . . . . . . . . . . . >   count(tips) as tips_cnt, sum(trip_total) as trip_sum 
+  . . . . . . . . . . . . . . . . . . > from chicago_taxi_trips_parquet 
+  . . . . . . . . . . . . . . . . . . > where trip_miles > 10 
+  . . . . . . . . . . . . . . . . . . > group by company, payment_type 
+  . . . . . . . . . . . . . . . . . . > order by trip_sum desc limit 10;
+  +----------------------------+---------------+---------------------+-----------+-----------------------+
+  |          company           | payment_type  |      fare_avg       | tips_cnt  |       trip_sum        |
+  +----------------------------+---------------+---------------------+-----------+-----------------------+
+  |                            | Credit Card   | 37.027273500806785  | 521526    | 2.5134563886876106E7  |
+  | Flash Cab                  | Credit Card   | 41.99047601477241   | 308982    | 1.6884569577551126E7  |
+  |                            | Cash          | 38.15729485945225   | 372651    | 1.5162053984136779E7  |
+  | Flash Cab                  | Cash          | 41.50385456209039   | 221317    | 9806576.360176066     |
+  | Yellow Cab                 | Credit Card   | 35.49151135112179   | 201416    | 9182222.00885582      |
+  | Chicago Carriage Cab Corp  | Credit Card   | 42.40266097139762   | 97859     | 5558970.788137436     |
+  | Sun Taxi                   | Credit Card   | 42.96299266089784   | 89793     | 5155943.359415054     |
+  | Yellow Cab                 | Cash          | 35.585518042922885  | 124546    | 4743887.57028389      |
+  | City Service               | Credit Card   | 42.79959499490314   | 79357     | 4501295.169416428     |
+  | Medallion Leasin           | Credit Card   | 42.188825883055976  | 76977     | 4326826.978925705     |
+  +----------------------------+---------------+---------------------+-----------+-----------------------+
+  10 rows selected (28.431 seconds)
+  </details></pre>
