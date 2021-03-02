@@ -772,9 +772,755 @@ $ beeline -u "jdbc:hive2://hive-cluster-m:10000"
 
 - результат
 
-|        | csv#1 | prq#1 | csv#2 | prq#2 | csv#3 | prq#3 |
-|-------:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| **pq (presto)** | 19 sec | 2 sec | 1 sec | 1 sec | 15 sec | 4 sec |
-| **hq (hive)**   | 32.01 sec | 18.06 sec | 32.34 sec | 17.65 sec | 42.78 sec | 28.43 sec |
+|                 |   csv#1   |   prq#1   |   csv#2   |   prq#2   |   csv#3   |   prq#3   |
+| --------------: | :-------: | :-------: | :-------: | :-------: | :-------: | :-------: |
+| **pq (presto)** |  19 sec   |   2 sec   |   1 sec   |   1 sec   |  15 sec   |   4 sec   |
+|   **hq (hive)** | 32.01 sec | 18.06 sec | 32.34 sec | 17.65 sec | 42.78 sec | 28.43 sec |
 
 ❗`presto` тут всегда быстрее
+
+---
+
+<div align="center"><h3>Вопросы для домашнего задания</h3></div>
+
+---
+
+#### 1. Вывести динамику количества поездок помесячно
+
+- `presto`
+
+  ```sql
+  4. csv:
+    select
+      year(cast(trip_start_timestamp as timestamp)) as year_num,
+      month(cast(trip_start_timestamp as timestamp)) as month_num,
+      count(*) as trip_total
+    from chicago_taxi_trips_csv
+    group by 1, 2
+    order by 1, 2;
+
+  4. prq:
+    select
+      year(cast(trip_start_timestamp as timestamp)) as year_num,
+      month(cast(trip_start_timestamp as timestamp)) as month_num,
+      count(*) as trip_total
+    from chicago_taxi_trips_parquet
+    group by 1, 2
+    order by 1, 2;
+  ```
+
+    <pre><details><summary>pq_csv#4</summary>
+    presto:default> select 
+                 ->   year(cast(trip_start_timestamp as timestamp)) as year_num, 
+                 ->   month(cast(trip_start_timestamp as timestamp)) as month_num, 
+                 ->   count(*) as trip_total 
+                 -> from chicago_taxi_trips_csv 
+                 -> group by 1, 2
+                 -> order by 1, 2;
+    year_num | month_num | trip_total 
+    ---------+-----------+------------
+        2013 |         1 |     215935 
+        2013 |         2 |     132409 
+        2013 |         3 |      87160 
+        2013 |         4 |     356653 
+        2013 |         5 |     127890 
+        2013 |         6 |     118216 
+        2013 |         7 |      55782 
+        2013 |         8 |      19816 
+        2013 |         9 |      11780 
+        2013 |        10 |      12005 
+        2013 |        11 |       6120 
+        2013 |        12 |      30358 
+        2014 |         1 |     418870 
+        2014 |         2 |     380450 
+        2014 |         3 |     181850 
+        2014 |         4 |      76651 
+        2014 |         5 |      77415 
+        2014 |         6 |      79741 
+        2014 |         7 |     311233 
+        2014 |         8 |     440997 
+        2014 |         9 |     434875 
+        2014 |        10 |     708129 
+        2014 |        11 |     673618 
+        2014 |        12 |     678707 
+        2015 |         1 |     350553 
+        2015 |         2 |     358134 
+        2015 |         3 |     399913 
+        2015 |         4 |     210063 
+        2015 |         5 |     662593 
+        2015 |         6 |     212830 
+        2015 |         7 |     103778 
+        2015 |         8 |     122721 
+        2015 |         9 |      66106 
+        2015 |        10 |        869 
+        2015 |        11 |     150001 
+        2015 |        12 |     248912 
+        2016 |         1 |     138434 
+        2016 |         2 |     480477 
+        2016 |         3 |     567685 
+        2016 |         4 |     651726 
+        2016 |         5 |     360785 
+        2016 |         6 |     122605 
+        2016 |         7 |     529379 
+        2016 |         8 |     371470 
+        2016 |         9 |      71914 
+        2016 |        10 |       8994 
+        2016 |        11 |      11239 
+        2016 |        12 |       2056 
+        2017 |         1 |     613504 
+        2017 |         2 |      35399 
+        2017 |         3 |       5158 
+        2017 |         4 |     279430 
+        2017 |         5 |     320573 
+        2017 |         6 |     256587 
+        2017 |         7 |      59721 
+        2017 |         8 |      17052 
+        2017 |         9 |     209324 
+        2017 |        10 |     572579 
+        2017 |        11 |     849572 
+        2017 |        12 |     713139 
+        2018 |         1 |     411778 
+        2018 |         2 |     242562 
+        2018 |         3 |       9954 
+        2018 |         4 |       5118 
+        2018 |         5 |       2779 
+        2018 |         6 |     601891 
+        2018 |         7 |     131516 
+        2018 |         8 |     288211 
+        2018 |         9 |     268466 
+        2018 |        10 |     266613 
+        2018 |        11 |     119173 
+        2018 |        12 |     133021 
+        2019 |         1 |     115544 
+        2019 |         2 |     435101 
+        2019 |         3 |      16346 
+        2019 |         4 |     239267 
+        2019 |         5 |     845748 
+        2019 |         6 |    1430430 
+        2019 |         7 |      89140 
+        2019 |         8 |     217336 
+        2019 |         9 |          6 
+    (81 rows)
+  
+    Query 20210226_205755_00038_ukm5q, FINISHED, 2 nodes
+    Splits: 336 total, 336 done (100.00%)
+    1:38 [21.6M rows, 7.96GB] [220K rows/s, 82.8MB/s]
+    </details></pre>
+
+    <pre><details><summary>pq_prq#4</summary>
+    presto:default> select 
+                 ->   year(cast(trip_start_timestamp as timestamp)) as year_num, 
+                 ->   month(cast(trip_start_timestamp as timestamp)) as month_num, 
+                 ->   count(*) as trip_total 
+                 -> from chicago_taxi_trips_parquet 
+                 -> group by 1, 2
+                 -> order by 1, 2;
+    year_num | month_num | trip_total 
+    ---------+-----------+------------
+        2013 |         1 |     215935 
+        2013 |         2 |     132409 
+        2013 |         3 |      87160 
+        2013 |         4 |     356653 
+        2013 |         5 |     127890 
+        2013 |         6 |     118216 
+        2013 |         7 |      55782 
+        2013 |         8 |      19816 
+        2013 |         9 |      11780 
+        2013 |        10 |      12005 
+        2013 |        11 |       6120 
+        2013 |        12 |      30358 
+        2014 |         1 |     418870 
+        2014 |         2 |     380450 
+        2014 |         3 |     181850 
+        2014 |         4 |      76651 
+        2014 |         5 |      77415 
+        2014 |         6 |      79741 
+        2014 |         7 |     311233 
+        2014 |         8 |     440997 
+        2014 |         9 |     434875 
+        2014 |        10 |     708129 
+        2014 |        11 |     673618 
+        2014 |        12 |     678707 
+        2015 |         1 |     350553 
+        2015 |         2 |     358134 
+        2015 |         3 |     399913 
+        2015 |         4 |     210063 
+        2015 |         5 |     662593 
+        2015 |         6 |     212830 
+        2015 |         7 |     103778 
+        2015 |         8 |     122721 
+        2015 |         9 |      66106 
+        2015 |        10 |        869 
+        2015 |        11 |     150001 
+        2015 |        12 |     248912 
+        2016 |         1 |     138434 
+        2016 |         2 |     480477 
+        2016 |         3 |     567685 
+        2016 |         4 |     651726 
+        2016 |         5 |     360785 
+        2016 |         6 |     122605 
+        2016 |         7 |     529379 
+        2016 |         8 |     371470 
+        2016 |         9 |      71914 
+        2016 |        10 |       8994 
+        2016 |        11 |      11239 
+        2016 |        12 |       2056 
+        2017 |         1 |     613504 
+        2017 |         2 |      35399 
+        2017 |         3 |       5158 
+        2017 |         4 |     279430 
+        2017 |         5 |     320573 
+        2017 |         6 |     256587 
+        2017 |         7 |      59721 
+        2017 |         8 |      17052 
+        2017 |         9 |     209324 
+        2017 |        10 |     572579 
+        2017 |        11 |     849572 
+        2017 |        12 |     713139 
+        2018 |         1 |     411778 
+        2018 |         2 |     242562 
+        2018 |         3 |       9954 
+        2018 |         4 |       5118 
+        2018 |         5 |       2779 
+        2018 |         6 |     601891 
+        2018 |         7 |     131516 
+        2018 |         8 |     288211 
+        2018 |         9 |     268466 
+        2018 |        10 |     266613 
+        2018 |        11 |     119173 
+        2018 |        12 |     133021 
+        2019 |         1 |     115544 
+        2019 |         2 |     435101 
+        2019 |         3 |      16346 
+        2019 |         4 |     239267 
+        2019 |         5 |     845748 
+        2019 |         6 |    1430430 
+        2019 |         7 |      89140 
+        2019 |         8 |     217336 
+        2019 |         9 |          6 
+    (81 rows)
+  
+    Query 20210226_211640_00039_ukm5q, FINISHED, 2 nodes
+    Splits: 144 total, 144 done (100.00%)
+    0:09 [21.6M rows, 50.9MB] [2.3M rows/s, 5.4MB/s]
+    </details></pre>
+
+- `hive`
+
+  ```sql
+  4. csv:
+    select
+      year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as year_num,
+      month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as month_num,
+      count(*) as trip_total
+    from chicago_taxi_trips_csv
+    group by
+      year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))),
+      month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss')))
+    order by year_num, month_num;
+
+  4. prq:
+    select
+      year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as year_num,
+      month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as month_num,
+      count(*) as trip_total
+    from chicago_taxi_trips_parquet
+    group by
+      year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))),
+      month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss')))
+    order by year_num, month_num;
+  ```
+
+  <pre><details><summary>hq_csv#4</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select 
+  . . . . . . . . . . . . . . . . . . >   year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as year_num, 
+  . . . . . . . . . . . . . . . . . . >   month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as month_num, 
+  . . . . . . . . . . . . . . . . . . >   count(*) as trip_total 
+  . . . . . . . . . . . . . . . . . . > from chicago_taxi_trips_csv 
+  . . . . . . . . . . . . . . . . . . > group by 
+  . . . . . . . . . . . . . . . . . . >   year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))), 
+  . . . . . . . . . . . . . . . . . . >   month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss')))  
+  . . . . . . . . . . . . . . . . . . > order by year_num, month_num;
+  +-----------+------------+-------------+
+  | year_num  | month_num  | trip_total  |
+  +-----------+------------+-------------+
+  | 2013      | 1          | 215935      |
+  | 2013      | 2          | 132409      |
+  | 2013      | 3          | 87160       |
+  | 2013      | 4          | 356653      |
+  | 2013      | 5          | 127890      |
+  | 2013      | 6          | 118216      |
+  | 2013      | 7          | 55782       |
+  | 2013      | 8          | 19816       |
+  | 2013      | 9          | 11780       |
+  | 2013      | 10         | 12005       |
+  | 2013      | 11         | 6120        |
+  | 2013      | 12         | 30358       |
+  | 2014      | 1          | 418870      |
+  | 2014      | 2          | 380450      |
+  | 2014      | 3          | 181850      |
+  | 2014      | 4          | 76651       |
+  | 2014      | 5          | 77415       |
+  | 2014      | 6          | 79741       |
+  | 2014      | 7          | 311233      |
+  | 2014      | 8          | 440997      |
+  | 2014      | 9          | 434875      |
+  | 2014      | 10         | 708129      |
+  | 2014      | 11         | 673618      |
+  | 2014      | 12         | 678707      |
+  | 2015      | 1          | 350553      |
+  | 2015      | 2          | 358134      |
+  | 2015      | 3          | 399913      |
+  | 2015      | 4          | 210063      |
+  | 2015      | 5          | 662593      |
+  | 2015      | 6          | 212830      |
+  | 2015      | 7          | 103778      |
+  | 2015      | 8          | 122721      |
+  | 2015      | 9          | 66106       |
+  | 2015      | 10         | 869         |
+  | 2015      | 11         | 150001      |
+  | 2015      | 12         | 248912      |
+  | 2016      | 1          | 138434      |
+  | 2016      | 2          | 480477      |
+  | 2016      | 3          | 567685      |
+  | 2016      | 4          | 651726      |
+  | 2016      | 5          | 360785      |
+  | 2016      | 6          | 122605      |
+  | 2016      | 7          | 529379      |
+  | 2016      | 8          | 371470      |
+  | 2016      | 9          | 71914       |
+  | 2016      | 10         | 8994        |
+  | 2016      | 11         | 11239       |
+  | 2016      | 12         | 2056        |
+  | 2017      | 1          | 613504      |
+  | 2017      | 2          | 35399       |
+  | 2017      | 3          | 5158        |
+  | 2017      | 4          | 279430      |
+  | 2017      | 5          | 320573      |
+  | 2017      | 6          | 256587      |
+  | 2017      | 7          | 59721       |
+  | 2017      | 8          | 17052       |
+  | 2017      | 9          | 209324      |
+  | 2017      | 10         | 572579      |
+  | 2017      | 11         | 849572      |
+  | 2017      | 12         | 713139      |
+  | 2018      | 1          | 411778      |
+  | 2018      | 2          | 242562      |
+  | 2018      | 3          | 9954        |
+  | 2018      | 4          | 5118        |
+  | 2018      | 5          | 2779        |
+  | 2018      | 6          | 601891      |
+  | 2018      | 7          | 131516      |
+  | 2018      | 8          | 288211      |
+  | 2018      | 9          | 268466      |
+  | 2018      | 10         | 266613      |
+  | 2018      | 11         | 119173      |
+  | 2018      | 12         | 133021      |
+  | 2019      | 1          | 115544      |
+  | 2019      | 2          | 435101      |
+  | 2019      | 3          | 16346       |
+  | 2019      | 4          | 239267      |
+  | 2019      | 5          | 845748      |
+  | 2019      | 6          | 1430430     |
+  | 2019      | 7          | 89140       |
+  | 2019      | 8          | 217336      |
+  | 2019      | 9          | 6           |
+  +-----------+------------+-------------+
+  81 rows selected (76.706 seconds)
+  </details></pre>
+
+  <pre><details><summary>hq_prq#4</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select 
+  . . . . . . . . . . . . . . . . . . >   year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as year_num, 
+  . . . . . . . . . . . . . . . . . . >   month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))) as month_num, 
+  . . . . . . . . . . . . . . . . . . >   count(*) as trip_total 
+  . . . . . . . . . . . . . . . . . . > from chicago_taxi_trips_parquet 
+  . . . . . . . . . . . . . . . . . . > group by 
+  . . . . . . . . . . . . . . . . . . >   year(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss'))), 
+  . . . . . . . . . . . . . . . . . . >   month(from_unixtime(to_unix_timestamp(trip_start_timestamp, 'yyyy-MM-dd HH:mm:ss')))  
+  . . . . . . . . . . . . . . . . . . > order by year_num, month_num;
+  +-----------+------------+-------------+
+  | year_num  | month_num  | trip_total  |
+  +-----------+------------+-------------+
+  | 2013      | 1          | 215935      |
+  | 2013      | 2          | 132409      |
+  | 2013      | 3          | 87160       |
+  | 2013      | 4          | 356653      |
+  | 2013      | 5          | 127890      |
+  | 2013      | 6          | 118216      |
+  | 2013      | 7          | 55782       |
+  | 2013      | 8          | 19816       |
+  | 2013      | 9          | 11780       |
+  | 2013      | 10         | 12005       |
+  | 2013      | 11         | 6120        |
+  | 2013      | 12         | 30358       |
+  | 2014      | 1          | 418870      |
+  | 2014      | 2          | 380450      |
+  | 2014      | 3          | 181850      |
+  | 2014      | 4          | 76651       |
+  | 2014      | 5          | 77415       |
+  | 2014      | 6          | 79741       |
+  | 2014      | 7          | 311233      |
+  | 2014      | 8          | 440997      |
+  | 2014      | 9          | 434875      |
+  | 2014      | 10         | 708129      |
+  | 2014      | 11         | 673618      |
+  | 2014      | 12         | 678707      |
+  | 2015      | 1          | 350553      |
+  | 2015      | 2          | 358134      |
+  | 2015      | 3          | 399913      |
+  | 2015      | 4          | 210063      |
+  | 2015      | 5          | 662593      |
+  | 2015      | 6          | 212830      |
+  | 2015      | 7          | 103778      |
+  | 2015      | 8          | 122721      |
+  | 2015      | 9          | 66106       |
+  | 2015      | 10         | 869         |
+  | 2015      | 11         | 150001      |
+  | 2015      | 12         | 248912      |
+  | 2016      | 1          | 138434      |
+  | 2016      | 2          | 480477      |
+  | 2016      | 3          | 567685      |
+  | 2016      | 4          | 651726      |
+  | 2016      | 5          | 360785      |
+  | 2016      | 6          | 122605      |
+  | 2016      | 7          | 529379      |
+  | 2016      | 8          | 371470      |
+  | 2016      | 9          | 71914       |
+  | 2016      | 10         | 8994        |
+  | 2016      | 11         | 11239       |
+  | 2016      | 12         | 2056        |
+  | 2017      | 1          | 613504      |
+  | 2017      | 2          | 35399       |
+  | 2017      | 3          | 5158        |
+  | 2017      | 4          | 279430      |
+  | 2017      | 5          | 320573      |
+  | 2017      | 6          | 256587      |
+  | 2017      | 7          | 59721       |
+  | 2017      | 8          | 17052       |
+  | 2017      | 9          | 209324      |
+  | 2017      | 10         | 572579      |
+  | 2017      | 11         | 849572      |
+  | 2017      | 12         | 713139      |
+  | 2018      | 1          | 411778      |
+  | 2018      | 2          | 242562      |
+  | 2018      | 3          | 9954        |
+  | 2018      | 4          | 5118        |
+  | 2018      | 5          | 2779        |
+  | 2018      | 6          | 601891      |
+  | 2018      | 7          | 131516      |
+  | 2018      | 8          | 288211      |
+  | 2018      | 9          | 268466      |
+  | 2018      | 10         | 266613      |
+  | 2018      | 11         | 119173      |
+  | 2018      | 12         | 133021      |
+  | 2019      | 1          | 115544      |
+  | 2019      | 2          | 435101      |
+  | 2019      | 3          | 16346       |
+  | 2019      | 4          | 239267      |
+  | 2019      | 5          | 845748      |
+  | 2019      | 6          | 1430430     |
+  | 2019      | 7          | 89140       |
+  | 2019      | 8          | 217336      |
+  | 2019      | 9          | 6           |
+  +-----------+------------+-------------+
+  81 rows selected (50.302 seconds)
+  </details></pre>
+
+#### 2. Вывести топ-10 компаний (company) по выручке (trip_total)
+
+```sql
+5. csv:
+  select company, sum(fare) as fare_total
+  from chicago_taxi_trips_csv
+  group by company
+  order by fare_total desc limit 10;
+
+5. prq:
+  select company, sum(fare) as fare_total
+  from chicago_taxi_trips_parquet
+  group by company
+  order by fare_total desc limit 10;
+```
+
+- `presto`
+  <pre><details><summary>pq_csv#5</summary>
+  presto:default> select company, sum(fare) as fare_total 
+               -> from chicago_taxi_trips_csv 
+               -> group by company 
+               -> order by fare_total desc limit 10;
+              company             |  fare_total  
+  --------------------------------+--------------
+                                  | 1.00663136E8 
+  Flash Cab                       |  5.2181236E7 
+  Yellow Cab                      |  3.2698214E7 
+  Chicago Carriage Cab Corp       |  1.4797446E7 
+  Medallion Leasin                |  1.1755347E7 
+  Sun Taxi                        |  1.1097099E7 
+  City Service                    |  1.0881035E7 
+  Taxi Affiliation Services       |    9673737.0 
+  Taxi Affiliation Service Yellow |    8014125.0 
+  Globe Taxi                      |    4668605.0 
+  (10 rows)
+  
+  Query 20210226_212510_00042_ukm5q, FINISHED, 2 nodes
+  Splits: 318 total, 318 done (100.00%)
+  0:15 [21.6M rows, 7.96GB] [1.45M rows/s, 547MB/s]
+  </details></pre>
+
+  <pre><details><summary>pq_prq#5</summary>
+  presto:default> select company, sum(fare) as fare_total 
+              -> from chicago_taxi_trips_parquet 
+              -> group by company 
+              -> order by fare_total desc limit 10;
+              company             |  fare_total  
+  ---------------------------------+--------------
+                                  | 1.00663136E8 
+  Flash Cab                       |  5.2181236E7 
+  Yellow Cab                      |  3.2698214E7 
+  Chicago Carriage Cab Corp       |  1.4797446E7 
+  Medallion Leasin                |  1.1755347E7 
+  Sun Taxi                        |  1.1097099E7 
+  City Service                    |  1.0881035E7 
+  Taxi Affiliation Services       |    9673737.0 
+  Taxi Affiliation Service Yellow |    8014125.0 
+  Globe Taxi                      |    4668605.0 
+  (10 rows)
+  
+  Query 20210226_214555_00045_ukm5q, FINISHED, 2 nodes
+  Splits: 126 total, 126 done (100.00%)
+  0:02 [21.6M rows, 32MB] [10.6M rows/s, 15.7MB/s]
+  </details></pre>
+
+- `hive`
+  <pre><details><summary>hq_csv#5</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select company, sum(fare) as fare_total 
+  . . . . . . . . . . . . . . . . . . > from chicago_taxi_trips_csv 
+  . . . . . . . . . . . . . . . . . . > group by company 
+  . . . . . . . . . . . . . . . . . . > order by fare_total desc limit 10;
+  +----------------------------------+-----------------------+
+  |             company              |      fare_total       |
+  +----------------------------------+-----------------------+
+  |                                  | 1.0066313469360045E8  |
+  | Flash Cab                        | 5.218123457959385E7   |
+  | Yellow Cab                       | 3.269821462575923E7   |
+  | Chicago Carriage Cab Corp        | 1.4797446390641816E7  |
+  | Medallion Leasin                 | 1.1755347040966257E7  |
+  | Sun Taxi                         | 1.1097099269294046E7  |
+  | City Service                     | 1.0881034790752165E7  |
+  | Taxi Affiliation Services        | 9673736.819789397     |
+  | Taxi Affiliation Service Yellow  | 8014124.872699812     |
+  | Globe Taxi                       | 4668604.969657799     |
+  +----------------------------------+-----------------------+
+  10 rows selected (43.337 seconds)
+  </details></pre>
+
+  <pre><details><summary>hq_prq#5</summary>
+  0: jdbc:hive2://hive-cluster-m:10000> select company, sum(fare) as fare_total 
+  . . . . . . . . . . . . . . . . . . > from chicago_taxi_trips_parquet 
+  . . . . . . . . . . . . . . . . . . > group by company 
+  . . . . . . . . . . . . . . . . . . > order by fare_total desc limit 10;
+  +----------------------------------+-----------------------+
+  |             company              |      fare_total       |
+  +----------------------------------+-----------------------+
+  |                                  | 1.0066313469360045E8  |
+  | Flash Cab                        | 5.218123457959385E7   |
+  | Yellow Cab                       | 3.269821462575923E7   |
+  | Chicago Carriage Cab Corp        | 1.4797446390641816E7  |
+  | Medallion Leasin                 | 1.1755347040966257E7  |
+  | Sun Taxi                         | 1.1097099269294046E7  |
+  | City Service                     | 1.0881034790752165E7  |
+  | Taxi Affiliation Services        | 9673736.819789397     |
+  | Taxi Affiliation Service Yellow  | 8014124.872699812     |
+  | Globe Taxi                       | 4668604.969657799     |
+  +----------------------------------+-----------------------+
+  10 rows selected (18.688 seconds)
+  </details></pre>
+
+#### 3. Подсчитать долю поездок <5, 5-15, 16-25, 26-100 миль
+
+- `presto`
+
+  ```sql
+  6. csv:
+    with cnt as (
+    select
+      count(*) as trips_all_cnt,
+      sum(if(trip_miles >= 0 and trip_miles < 5, 1, 0)) as less_5_cnt,
+      sum(if(trip_miles >= 5 and trip_miles < 16 , 1, 0)) as from_5_to_15_cnt,
+      sum(if(trip_miles >= 16 and trip_miles < 26 , 1, 0)) as from_16_to_25_cnt,
+      sum(if(trip_miles >= 26 and trip_miles < 100 , 1, 0)) as from_26_to_100_cnt,
+      sum(if(trip_miles >= 100, 1, 0)) as more_100_cnt,
+      sum(if(trip_miles <0 or trip_miles is null, 1, 0)) as no_category_cnt
+    from chicago_taxi_trips_csv
+    )
+    select
+      trips_all_cnt,
+      less_5_cnt, cast(less_5_cnt as decimal(38, 4)) / trips_all_cnt * 100 as less_5_pct,
+      from_5_to_15_cnt, cast(from_5_to_15_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_5_to_15_pct,
+      from_16_to_25_cnt, cast(from_16_to_25_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_16_to_25_pct,
+      from_26_to_100_cnt, cast(from_26_to_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_26_to_100_pct,
+      more_100_cnt, cast(more_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as more_100_pct,
+      no_category_cnt, cast(no_category_cnt as decimal(38, 4)) / trips_all_cnt * 100 as no_category_pct
+    from cnt;
+
+  6. prq:
+    with cnt as (
+    select
+      count(*) as trips_all_cnt,
+      sum(if(trip_miles >= 0 and trip_miles < 5, 1, 0)) as less_5_cnt,
+      sum(if(trip_miles >= 5 and trip_miles < 16 , 1, 0)) as from_5_to_15_cnt,
+      sum(if(trip_miles >= 16 and trip_miles < 26 , 1, 0)) as from_16_to_25_cnt,
+      sum(if(trip_miles >= 26 and trip_miles < 100 , 1, 0)) as from_26_to_100_cnt,
+      sum(if(trip_miles >= 100, 1, 0)) as more_100_cnt,
+      sum(if(trip_miles <0 or trip_miles is null, 1, 0)) as no_category_cnt
+    from chicago_taxi_trips_parquet
+    )
+    select
+      trips_all_cnt,
+      less_5_cnt, cast(less_5_cnt as decimal(38, 4)) / trips_all_cnt * 100 as less_5_pct,
+      from_5_to_15_cnt, cast(from_5_to_15_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_5_to_15_pct,
+      from_16_to_25_cnt, cast(from_16_to_25_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_16_to_25_pct,
+      from_26_to_100_cnt, cast(from_26_to_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_26_to_100_pct,
+      more_100_cnt, cast(more_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as more_100_pct,
+      no_category_cnt, cast(no_category_cnt as decimal(38, 4)) / trips_all_cnt * 100 as no_category_pct
+    from cnt;
+  ```
+
+    <pre><details><summary>pq_csv#6</summary>
+    +----------------+-------------+-------------+-------------------+-------------------+--------------------+--------------------+---------------------+---------------------+---------------+---------------+------------------+------------------+
+    | trips_all_cnt  | less_5_cnt  | less_5_pct  | from_5_to_15_cnt  | from_5_to_15_pct  | from_16_to_25_cnt  | from_16_to_25_pct  | from_26_to_100_cnt  | from_26_to_100_pct  | more_100_cnt  | more_100_pct  | no_category_cnt  | no_category_pct  |
+    +----------------+-------------+-------------+-------------------+-------------------+--------------------+--------------------+---------------------+---------------------+---------------+---------------+------------------+------------------+
+    | 21641935       | 17092947    | 78.980700   | 2906917           | 13.431900         | 1515054            | 7.000500           | 110425              | 0.510200            | 16254         | 0.075100      | 338              | 0.001600         |
+    +----------------+-------------+-------------+-------------------+-------------------+--------------------+--------------------+---------------------+---------------------+---------------+---------------+------------------+------------------+
+    1 row selected (49.657 seconds)
+    </details></pre>
+
+    <pre><details><summary>pq_prq#6</summary>
+    +----------------+-------------+-------------+-------------------+-------------------+--------------------+--------------------+---------------------+---------------------+---------------+---------------+------------------+------------------+
+    | trips_all_cnt  | less_5_cnt  | less_5_pct  | from_5_to_15_cnt  | from_5_to_15_pct  | from_16_to_25_cnt  | from_16_to_25_pct  | from_26_to_100_cnt  | from_26_to_100_pct  | more_100_cnt  | more_100_pct  | no_category_cnt  | no_category_pct  |
+    +----------------+-------------+-------------+-------------------+-------------------+--------------------+--------------------+---------------------+---------------------+---------------+---------------+------------------+------------------+
+    | 21641935       | 17092947    | 78.980700   | 2906917           | 13.431900         | 1515054            | 7.000500           | 110425              | 0.510200            | 16254         | 0.075100      | 338              | 0.001600         |
+    +----------------+-------------+-------------+-------------------+-------------------+--------------------+--------------------+---------------------+---------------------+---------------+---------------+------------------+------------------+
+    1 row selected (25.161 seconds)
+    </details></pre>
+
+- `hive`
+
+  ```sql
+  6. csv:
+    with cnt as (
+    select
+      count(*) as trips_all_cnt,
+      sum(if(trip_miles >= 0 and trip_miles < 5, 1, 0)) as less_5_cnt,
+      sum(if(trip_miles >= 5 and trip_miles < 16 , 1, 0)) as from_5_to_15_cnt,
+      sum(if(trip_miles >= 16 and trip_miles < 26 , 1, 0)) as from_16_to_25_cnt,
+      sum(if(trip_miles >= 26 and trip_miles < 100 , 1, 0)) as from_26_to_100_cnt,
+      sum(if(trip_miles >= 100 , 1, 0)) as more_100_cnt,
+      sum(if(trip_miles <0 or trip_miles is null, 1, 0)) as no_category_cnt
+    from chicago_taxi_trips_csv
+    ), pct as (
+    select
+      trips_all_cnt,
+      less_5_cnt, cast(less_5_cnt as decimal(38, 4)) / trips_all_cnt * 100 as less_5_pct,
+      from_5_to_15_cnt, cast(from_5_to_15_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_5_to_15_pct,
+      from_16_to_25_cnt, cast(from_16_to_25_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_16_to_25_pct,
+      from_26_to_100_cnt, cast(from_26_to_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_26_to_100_pct,
+      more_100_cnt, cast(more_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as more_100_pct,
+      no_category_cnt, cast(no_category_cnt as decimal(38, 4)) / trips_all_cnt * 100 as no_category_pct
+    from cnt
+    )
+    select
+      lv.key as `расстояние поездки`,
+      lv.agg_str.cnt as `количество`,
+      lv.agg_str.pct as `доля`
+    from pct
+    lateral view explode (
+      map(
+        'все', named_struct('cnt', trips_all_cnt, 'pct', 100.0000),
+        'от 0 до 5 миль', named_struct('cnt', less_5_cnt, 'pct', less_5_pct),
+        'от 5 до 16 миль', named_struct('cnt', from_5_to_15_cnt, 'pct', from_5_to_15_pct),
+        'от 16 до 26 миль', named_struct('cnt', from_16_to_25_cnt, 'pct', from_16_to_25_pct),
+        'от 26 до 100 миль', named_struct('cnt', from_26_to_100_cnt, 'pct', from_26_to_100_pct),
+        'свыше 100 миль', named_struct('cnt', more_100_cnt, 'pct', more_100_pct),
+        'без нормального значения', named_struct('cnt', no_category_cnt, 'pct', no_category_pct)
+      )) lv as key, agg_str;
+
+
+  6. prq:
+    with cnt as (
+    select
+      count(*) as trips_all_cnt,
+      sum(if(trip_miles >= 0 and trip_miles < 5, 1, 0)) as less_5_cnt,
+      sum(if(trip_miles >= 5 and trip_miles < 16 , 1, 0)) as from_5_to_15_cnt,
+      sum(if(trip_miles >= 16 and trip_miles < 26 , 1, 0)) as from_16_to_25_cnt,
+      sum(if(trip_miles >= 26 and trip_miles < 100 , 1, 0)) as from_26_to_100_cnt,
+      sum(if(trip_miles >= 100 , 1, 0)) as more_100_cnt,
+      sum(if(trip_miles <0 or trip_miles is null, 1, 0)) as no_category_cnt
+    from chicago_taxi_trips_parquet
+    ), pct as (
+    select
+      trips_all_cnt,
+      less_5_cnt, cast(less_5_cnt as decimal(38, 4)) / trips_all_cnt * 100 as less_5_pct,
+      from_5_to_15_cnt, cast(from_5_to_15_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_5_to_15_pct,
+      from_16_to_25_cnt, cast(from_16_to_25_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_16_to_25_pct,
+      from_26_to_100_cnt, cast(from_26_to_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as from_26_to_100_pct,
+      more_100_cnt, cast(more_100_cnt as decimal(38, 4)) / trips_all_cnt * 100 as more_100_pct,
+      no_category_cnt, cast(no_category_cnt as decimal(38, 4)) / trips_all_cnt * 100 as no_category_pct
+    from cnt
+    )
+    select
+      lv.key as `расстояние поездки`,
+      lv.agg_str.cnt as `количество`,
+      lv.agg_str.pct as `доля`
+    from pct
+    lateral view explode (
+      map(
+        'все', named_struct('cnt', trips_all_cnt, 'pct', 100.0000),
+        'от 0 до 5 миль', named_struct('cnt', less_5_cnt, 'pct', less_5_pct),
+        'от 5 до 16 миль', named_struct('cnt', from_5_to_15_cnt, 'pct', from_5_to_15_pct),
+        'от 16 до 26 миль', named_struct('cnt', from_16_to_25_cnt, 'pct', from_16_to_25_pct),
+        'от 26 до 100 миль', named_struct('cnt', from_26_to_100_cnt, 'pct', from_26_to_100_pct),
+        'свыше 100 миль', named_struct('cnt', more_100_cnt, 'pct', more_100_pct),
+        'без нормального значения', named_struct('cnt', no_category_cnt, 'pct', no_category_pct)
+      )) lv as key, agg_str;
+  ```
+
+    <pre><details><summary>hq_csv#6</summary>
+    +---------------------------+-------------+-------------+
+    |    расстояние поездки     | количество  |    доля     |
+    +---------------------------+-------------+-------------+
+    | все                       | 21641935    | 100.000000  |
+    | от 0 до 5 миль            | 17092947    | 78.980700   |
+    | от 5 до 16 миль           | 2906917     | 13.431900   |
+    | от 16 до 26 миль          | 1515054     | 7.000500    |
+    | от 26 до 100 миль         | 110425      | 0.510200    |
+    | свыше 100 миль            | 16254       | 0.075100    |
+    | без нормального значения  | 338         | 0.001600    |
+    +---------------------------+-------------+-------------+
+    7 rows selected (46.849 seconds)
+    </details></pre>
+
+    <pre><details><summary>hq_prq#6</summary>
+    +---------------------------+-------------+-------------+
+    |    расстояние поездки     | количество  |    доля     |
+    +---------------------------+-------------+-------------+
+    | все                       | 21641935    | 100.000000  |
+    | от 0 до 5 миль            | 17092947    | 78.980700   |
+    | от 5 до 16 миль           | 2906917     | 13.431900   |
+    | от 16 до 26 миль          | 1515054     | 7.000500    |
+    | от 26 до 100 миль         | 110425      | 0.510200    |
+    | свыше 100 миль            | 16254       | 0.075100    |
+    | без нормального значения  | 338         | 0.001600    |
+    +---------------------------+-------------+-------------+
+    7 rows selected (20.918 seconds)
+    </details></pre>
+
+- результат
+
+|                 |      csv#4       |   prq#4   |   csv#5    |   prq#5   |     csv#6     |     prq#6     |
+| --------------: | :--------------: | :-------: | :--------: | :-------: | :-----------: | :-----------: |
+| **pq (presto)** |   1 min 38 sec   | **9 sec** | **15 sec** | **2 sec** |   49.66 sec   |   25.16 sec   |
+|   **hq (hive)** | **1 min 17 sec** | 50.3 sec  | 43.34 sec  | 18.69 sec | **46.85 sec** | **20.92 sec** |
+
+❗в этих запросах и `presto` и `hive` показали одинаковый результат -> 3:3, но "победы" `presto` выглядят более убедительно.
