@@ -28,7 +28,7 @@ https://docs.google.com/document/d/1elWInbWsLrIDqB4FMMgFTUMNEmiYev9HJUfg9LXxydE?
 </details></pre>
 
 - скачал датасет [Crimes in Boston](https://www.kaggle.com/AnalyzeBoston/crimes-in-boston/download "Ctrl+click->new tab"), поместил его в каталог `data`
-- для работы со `Spark` буду использовать docker-контейнер из образа :link: [almondsh/almond:latest](https://hub.docker.com/r/almondsh/almond "Ctrl+click->new tab")
+- для работы со `Spark` использовал docker-контейнер из образа :link: [almondsh/almond:latest](https://hub.docker.com/r/almondsh/almond "Ctrl+click->new tab")
 
   - создал файл `docker-compose.yml`
   ```yaml
