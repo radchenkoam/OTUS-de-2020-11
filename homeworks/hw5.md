@@ -5,7 +5,7 @@
 
 ***
 
-<details><summary>Описание домашнего задания</summary>
+<pre><details><summary>Описание домашнего задания</summary>
 
 Домашнее задание: проектирование DWH и аналитических витрин
 
@@ -17,7 +17,7 @@
 Датасет: Любой из использованных на курсе: Boston Crimes, Chicago Taxi Trips, Захват данных из Divolte, либо любой из GCP Public Datasets)
 Definition of Done: • DDL объектов • DML шагов преобразований • Опционально: Тестирование на наличие ошибок в данных
 
-</details>
+</details></pre>
 
 ---
 
@@ -66,39 +66,39 @@ Done. PASS=2 WARN=0 ERROR=0 SKIP=0 TOTAL=2
 ```
 
 - выполнил команду развертывания моделей `dbt run`:
-    ```bash
-    $ dbt run
-    Running with dbt=0.18.2
-    [WARNING]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
-    There are 2 unused configuration paths:
-    - seeds.crimes_in_boston.crime
-    - seeds.crimes_in_boston.offense_codes
-    
-    Found 6 models, 13 tests, 0 snapshots, 0 analyses, 141 macros, 0 operations, 2 seed files, 0 sources
-    
-    00:46:28 | Concurrency: 1 threads (target='dev')
-    00:46:28 | 
-    00:46:28 | 1 of 6 START view model dbt.stg_crime................................ [RUN]
-    00:46:28 | 1 of 6 OK created view model dbt.stg_crime........................... [-1 in 0.09s]
-    00:46:28 | 2 of 6 START view model dbt.stg_offense_codes........................ [RUN]
-    00:46:28 | 2 of 6 OK created view model dbt.stg_offense_codes................... [-1 in 0.04s]
-    00:46:28 | 3 of 6 START table model dbt.crimes.................................. [RUN]
-    00:46:29 | 3 of 6 OK created table model dbt.crimes............................. [-1 in 1.21s]
-    00:46:29 | 4 of 6 START table model dbt.mrt_offense_all_count................... [RUN]
-    00:46:29 | 4 of 6 OK created table model dbt.mrt_offense_all_count.............. [-1 in 0.16s]
-    00:46:29 | 5 of 6 START table model dbt.mrt_offense_by_year_count............... [RUN]
-    00:46:29 | 5 of 6 OK created table model dbt.mrt_offense_by_year_count.......... [-1 in 0.18s]
-    00:46:29 | 6 of 6 START table model dbt.mrt_offense_by_year_month_count......... [RUN]
-    00:46:30 | 6 of 6 OK created table model dbt.mrt_offense_by_year_month_count.... [-1 in 0.19s]
-    00:46:30 | 
-    00:46:30 | Finished running 2 view models, 4 table models in 2.04s.
-    
-    Completed successfully
-    
-    Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
-    ```
+```bash
+$ dbt run
+Running with dbt=0.18.2
+[WARNING]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 2 unused configuration paths:
+- seeds.crimes_in_boston.crime
+- seeds.crimes_in_boston.offense_codes
 
-    - выполнил тестирование моделей `dbt test`:
+Found 6 models, 13 tests, 0 snapshots, 0 analyses, 141 macros, 0 operations, 2 seed files, 0 sources
+
+00:46:28 | Concurrency: 1 threads (target='dev')
+00:46:28 | 
+00:46:28 | 1 of 6 START view model dbt.stg_crime................................ [RUN]
+00:46:28 | 1 of 6 OK created view model dbt.stg_crime........................... [-1 in 0.09s]
+00:46:28 | 2 of 6 START view model dbt.stg_offense_codes........................ [RUN]
+00:46:28 | 2 of 6 OK created view model dbt.stg_offense_codes................... [-1 in 0.04s]
+00:46:28 | 3 of 6 START table model dbt.crimes.................................. [RUN]
+00:46:29 | 3 of 6 OK created table model dbt.crimes............................. [-1 in 1.21s]
+00:46:29 | 4 of 6 START table model dbt.mrt_offense_all_count................... [RUN]
+00:46:29 | 4 of 6 OK created table model dbt.mrt_offense_all_count.............. [-1 in 0.16s]
+00:46:29 | 5 of 6 START table model dbt.mrt_offense_by_year_count............... [RUN]
+00:46:29 | 5 of 6 OK created table model dbt.mrt_offense_by_year_count.......... [-1 in 0.18s]
+00:46:29 | 6 of 6 START table model dbt.mrt_offense_by_year_month_count......... [RUN]
+00:46:30 | 6 of 6 OK created table model dbt.mrt_offense_by_year_month_count.... [-1 in 0.19s]
+00:46:30 | 
+00:46:30 | Finished running 2 view models, 4 table models in 2.04s.
+
+Completed successfully
+
+Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
+```
+
+- выполнил тестирование моделей `dbt test`:
 ```bash
 $ dbt test
 Running with dbt=0.18.2
