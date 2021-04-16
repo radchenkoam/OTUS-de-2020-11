@@ -1,7 +1,3 @@
 *.class
 *.log
-/.idea
-/.metals
-/.vscode
-/.scala
-.gitignore
+*.csv
