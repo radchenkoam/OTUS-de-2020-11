@@ -37,3 +37,9 @@
 ### **Занятие 19**
 #### SQL-доступ к данным. Apache Hive.
 - [**Домашнее задание**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/hw6.md "Ctrl+click->new tab")</br>**Практика с Hive на GCP DataProc.**
+
+***
+
+### **Занятие 29**
+#### Защита проектных работ
+- [**Проектная работа**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/gw.md "Ctrl+click->new tab")</br>**Тема проектной работы**
