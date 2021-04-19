@@ -6,6 +6,8 @@
 ***
 <p align="center"><img src="https://user-images.githubusercontent.com/29423304/115256529-f7f16e00-a137-11eb-877f-547a793844a7.jpg" /></p>
 
+***
+
 <h3><div align="center">1. Изучение датасета <Crimes in Boston> в JupiterLab</h3>
 
 ***
