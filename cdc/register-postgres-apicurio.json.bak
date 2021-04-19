@@ -1,0 +1,21 @@
+{
+    "name": "boston-crimes-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "boston_crimes",
+        "database.server.name": "dbserver1",
+        "database.include": "boston_crimes",
+        "table.include.list": "dbt.crime",
+        "database.history.kafka.bootstrap.servers": "kafka:9092",
+        "database.history.kafka.topic": "schema-changes.boston-crimes",
+
+        "key.converter": "io.confluent.connect.avro.AvroConverter",
+        "value.converter": "io.confluent.connect.avro.AvroConverter",
+        "key.converter.schema.registry.url": "http://apicurio:8080/api/ccompat",
+        "value.converter.schema.registry.url": "http://apicurio:8080/api/ccompat"
+    }
+}

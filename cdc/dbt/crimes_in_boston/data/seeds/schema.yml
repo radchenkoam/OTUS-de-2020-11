@@ -1,0 +1,23 @@
+version: 2
+
+seeds:
+  - name: crime
+    description: A crime incident information
+    docs:
+      show: true
+    columns:
+      - name: INCIDENT_NUMBER
+        description: Primary key of the table
+        tests:
+          - unique
+          - not_null
+  - name: offense_codes
+    description: Offense codes
+    docs:
+      show: true
+    columns:
+      - name: CODE
+        description: Primary key of the table
+        tests:
+          - unique
+          - not_null

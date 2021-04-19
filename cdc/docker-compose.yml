@@ -1,0 +1,103 @@
+version: '3.9'
+
+services:
+  zookeeper:
+    image: debezium/zookeeper:${DEBEZIUM_VER}
+    container_name: zookeper
+    ports:
+     - 2181:2181
+     - 2888:2888
+     - 3888:3888
+
+  kafka:
+    image: debezium/kafka:${DEBEZIUM_VER}
+    container_name: kafka
+    ports:
+     - 9092:9092
+    links:
+     - zookeeper
+    environment:
+     - ZOOKEEPER_CONNECT=zookeeper:2181
+
+  postgres:
+    image: debezium/postgres:${DEBEZIUM_VER}
+    container_name: postgres
+    build:
+      context: ./postgres
+    ports:
+     - 5432:5432
+    environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+
+  apicurio:
+    image: apicurio/apicurio-registry-mem:2.0.0.Final
+    container_name: apicurio
+    ports:
+      - 8080:8080
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - REGISTRY_URL=http://apicurio:8080
+      - ENABLE_APICURIO_CONVERTERS=true
+
+  connect:
+    image: debezium/connect:${DEBEZIUM_VER}
+    container_name: connect
+    ports:
+     - 8083:8083
+    depends_on:
+     - kafka
+     - postgres
+     - apicurio
+    environment:
+     - BOOTSTRAP_SERVERS=kafka:9092
+     - GROUP_ID=1
+     - CONFIG_STORAGE_TOPIC=my_connect_configs
+     - OFFSET_STORAGE_TOPIC=my_connect_offsets
+     - STATUS_STORAGE_TOPIC=my_connect_statuses
+     - ENABLE_APICURIO_CONVERTERS=true
+
+  streamsets:
+    image: streamsets/datacollector
+    container_name: datacollector
+    build:
+      context: ./streamsets
+      args:
+        SDC_LIBS: streamsets-datacollector-apache-kafka_2_6-lib,streamsets-datacollector-cdh_6_3-lib
+    ports:
+      - 18630:18630
+    volumes:
+      - ./streamsets/sdc-data:/data
+
+  # HDFS namenode
+  namenode:
+    image: bde2020/hadoop-namenode:${HADOOP_VER}
+    container_name: namenode
+    ports:
+      - 9870:9870
+      - 9005:9005
+    # volumes:
+    #   - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop/hadoop.env
+
+  # HDFS datanode
+  datanode:
+    image: bde2020/hadoop-datanode:${HADOOP_VER}
+    container_name: datanode
+    # volumes:
+    #   - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop/hadoop.env
+
+networks:
+  default:
+    name: dbt-net
+
+# volumes:
+#   hadoop_namenode:
+#   hadoop_datanode:
