@@ -42,4 +42,4 @@
 
 ### **Занятие 29**
 #### Защита проектных работ
-- [**Проектная работа**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/gw.md "Ctrl+click->new tab")</br>**Практическое применение в работе Инженера данных современных инструментов обработки данных (ETL и ELT).**
+- [**Проектная работа**](https://github.com/radchenkoam/OTUS-de-2020-11/blob/dev/homeworks/gw.md "Ctrl+click->new tab")</br>**Изучение набора данных в JupiterLab (PySpark), </br>последующая загрузка и построение витрин в СУБД Vertica </br>с помощью Data Build Tool, визуализация в Redash.**
